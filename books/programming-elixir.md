@@ -159,3 +159,21 @@ report.owner.name  #=> "Dave"
 arityだけでなく、実はマクロと関数という違いがある。
 関数の場合は`put_in(report, [:owner, :name], "Bob")`という使い方。`@derive Access`が必要になる。
 マクロなら`put_in(report.owner.name, "Bob")`という感じで`@derive Access`要らない。
+
+### Strings and Binaries
+
+#### Sigils
+
+`~c`, `~r`, `~s`, `~w`。大文字だとエスケープと文字列展開しない。
+`~w`は末尾にオプションを取れる。
+
+```
+~w[a, b, c]a #=> [:a, :b, :c]
+~w[a, b, c]c #=> ['a', 'b', 'c']
+~w[a, b, c]s #=> ["a", "b", "c"]
+```
+
+#### Binaries and Pattern Matching
+
+バイナリのタイプはbits, bitstring, bytes, float, integer, utf8, utf16, utf32から指定できる。
+サイズ指定はsize(n), 符号をsigned, unsignedで指定し、エンディアンはbig, little, nativeのどれか。
