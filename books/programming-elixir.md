@@ -107,3 +107,55 @@ def fun(m..n) do
   IO.puts m
 end
 ```
+
+### 辞書型
+
+#### 選び方
+
+* キーが重複する可能性があるなら`Keyword`
+* 要素の順番が保存されてほしいなら`Keyword`
+* パターンマッチで要素を取り出したいなら`Map`
+* 格納する要素の数が多いなら`HashDict`
+
+#### パターンマッチとキーへの束縛
+
+```
+iex> %{ 2 => state } = %{ 1 => :ok, 2 => :error }  # これOKっぽい
+%{1 => :ok, 2 => :error}
+iex> state
+:error
+iex> %{ item => :ok } = %{ 1 => :ok, 2 => :error }  # 値ベースの束縛はできない
+** (CompileError)
+```
+
+#### Nested Struct
+
+```
+defmodule Customer do
+  defstruct name: "", company: ""
+end
+
+defmodule BugReport do
+  defstruct owner: %{}, details: "", severity: 1
+end
+
+report = %BugReport{owner: %Customer{name: "Dave" ... }}
+report.owner.name  #=> "Dave"
+```
+
+`owner`のデフォルト値が`%{}`だったが、`%Customer{}`ではないのか。
+明示したほうがいい気がするが、コンパイル順を指定しないとエラるはず。
+明示しても他の構造体を入れてしまうことは防げないので`%{}`でもいいのかも。
+
+#### Dynamic Nested Accessor
+
+|                 |Macro      |Function          |
+|:----------------|:----------|:-----------------|
+|get_in           | -         |(dict, keys)      |
+|put_in           |(path, val)|(dict, keys, vals)|
+|update_in        |(path, fun)|(dict, keys, fun) |
+|get_and_update_in|(path, fun)|(dict, keys, fun) |
+
+arityだけでなく、実はマクロと関数という違いがある。
+関数の場合は`put_in(report, [:owner, :name], "Bob")`という使い方。`@derive Access`が必要になる。
+マクロなら`put_in(report.owner.name, "Bob")`という感じで`@derive Access`要らない。
