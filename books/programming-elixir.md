@@ -191,7 +191,7 @@ arityだけでなく、実はマクロと関数という違いがある。
 
 #### IO, PIDs, and Nodes
 
-`:erlang.group_leader`に名前をつけると他のノードから`IO.puts`できる。何に使えるかは知らん。
+`:erlang.group_leader`にグローバルな名前をつけると他のノードから`IO.puts`できる。何に使えるかは知らん。
 
 ```
 # Node 1
@@ -199,5 +199,5 @@ arityだけでなく、実はマクロと関数という違いがある。
 
 # Node 2
 remote_group_leader = :global.whereis_name(:node1_group_leader)
-IO.puts(remote_stdout, "hey")
+IO.puts(remote_group_leader, "hey")
 ```
