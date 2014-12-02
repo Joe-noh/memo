@@ -149,12 +149,12 @@ report.owner.name  #=> "Dave"
 
 #### Dynamic Nested Accessor
 
-|                 |Macro      |Function          |
-|:----------------|:----------|:-----------------|
-|get_in           | -         |(dict, keys)      |
-|put_in           |(path, val)|(dict, keys, vals)|
-|update_in        |(path, fun)|(dict, keys, fun) |
-|get_and_update_in|(path, fun)|(dict, keys, fun) |
+|                 |Macro      |Function         |
+|:----------------|:----------|:----------------|
+|get_in           | -         |(dict, keys)     |
+|put_in           |(path, val)|(dict, keys, val)|
+|update_in        |(path, fun)|(dict, keys, fun)|
+|get_and_update_in|(path, fun)|(dict, keys, fun)|
 
 arityだけでなく、実はマクロと関数という違いがある。
 関数の場合は`put_in(report, [:owner, :name], "Bob")`という使い方。`@derive Access`が必要になる。
@@ -177,3 +177,27 @@ arityだけでなく、実はマクロと関数という違いがある。
 
 バイナリのタイプはbits, bitstring, bytes, float, integer, utf8, utf16, utf32から指定できる。
 サイズ指定はsize(n), 符号をsigned, unsignedで指定し、エンディアンはbig, little, nativeのどれか。
+
+### Nodes
+
+#### Nodes, Cookies, and Security
+
+クッキーは平文で送られるので、パブリックなネットワークを介した通信はダメ。
+
+#### プロセスの命名
+
+* `:global.register_name(:bob, pid)`で命名
+* `:global.whereis_name(:bob)`で検索
+
+#### IO, PIDs, and Nodes
+
+`:erlang.group_leader`に名前をつけると他のノードから`IO.puts`できる。何に使えるかは知らん。
+
+```
+# Node 1
+:global.register_name(:node1_group_leader, :erlang.group_leader)
+
+# Node 2
+remote_group_leader = :global.whereis_name(:node1_group_leader)
+IO.puts(remote_stdout, "hey")
+```
