@@ -201,3 +201,27 @@ arityだけでなく、実はマクロと関数という違いがある。
 remote_group_leader = :global.whereis_name(:node1_group_leader)
 IO.puts(remote_group_leader, "hey")
 ```
+
+### BehaviourとUse
+
+#### Behaviour
+
+モジュール内で`use Behaviour`し、`defcallback`でコールバックを定義すると、そのモジュールがInterfaceみたいになる。他のモジュールで`@behaviour`を使うとコールバック関数の定義を強制できる。
+
+```
+defmodule BehaviourModule do
+  use Behaviour
+
+  defcallback callback_function(arg :: integer) :: String.t
+end
+
+defmodule MyModule do
+  @behaviour BehaviourModule
+
+  def callback_function(arg) do
+    ...
+  end
+end
+```
+
+`defcallback`の引数には型指定子が必須っぽい
